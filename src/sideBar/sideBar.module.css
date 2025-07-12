@@ -1,0 +1,24 @@
+.sidebarContainer {
+  border-right: 1px solid #eee;
+  padding: 15px;
+  font-size: 12px;
+  background: #fcfcfc;
+  width: 150px;
+}
+
+.panelTitle {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.nodeItem {
+  height: 50px;
+  padding: 8px;
+  border: 1px solid #4caf50;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: grab;
+  flex-direction: column;
+}

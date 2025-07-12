@@ -1,4 +1,5 @@
 import React from "react";
+
 import styles from "./textNode.module.css";
 
 // Custom TextNode component
