@@ -1,0 +1,44 @@
+.textNodeContainer {
+  background: #b2f0e3;
+  border: 1px solid #1a192b;
+  border-radius: 8px;
+  padding: 15px;
+  font-family: Arial, sans-serif;
+  position: relative; /* Needed for absolute handles positioning */
+  min-width: 150px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.title {
+  font-weight: bold;
+}
+
+.platform {
+  color: #4caf50;
+}
+
+.handle {
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border: 1px solid #1a192b;
+  border-radius: 50%;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+}
+
+.handleSource {
+  left: -6px;
+}
+
+.handleTarget {
+  right: -6px;
+}
