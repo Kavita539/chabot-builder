@@ -1,70 +1,145 @@
-# Getting Started with Create React App
+# 🤖 Chatbot Flow Builder
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A drag-and-drop interface for visually designing chatbot message flows using **React** and **@xyflow/react** (React Flow). This tool allows users to connect messages using nodes and edges, manage flow validation, and easily extend node types in the future.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 📚 Table of Contents
 
-### `npm start`
+- [Features](#features)
+- [Component Overview](#component-overview)
+- [Project Structure](#project-structure)
+- [CSS Modules](#css-modules)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Tech Stack](#tech-stack)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## ✅ Features
 
-### `npm test`
+### 1. **Text Node**
+- Represents a basic chatbot message.
+- Multiple text nodes can exist in a single flow.
+- Nodes are draggable from the **Nodes Panel**.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### 2. **Nodes Panel**
+- Displays all node types supported by the flow builder.
+- Currently only includes a **Text Node**, but designed to be extensible for future types.
 
-### `npm run build`
+### 3. **Edge (Connection)**
+- Connects a node’s source handle to another node’s target handle.
+- Represents the flow between chatbot messages.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### 4. **Source Handle**
+- Each node can have only **one outgoing edge**.
+- Prevents circular or multiple flow branches from the same point.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 5. **Target Handle**
+- Accepts **multiple incoming edges**.
+- Useful for merging flow branches into a single destination node.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 6. **Settings Panel**
+- Appears when a node is selected.
+- Allows editing the label of the selected **Text Node**.
+- Automatically replaces the **Nodes Panel** during node selection.
 
-### `npm run eject`
+### 7. **Save Button**
+- Triggers validation and saves the current node/edge layout.
+- **Validation logic:**
+  - If there are multiple nodes,
+  - And more than one node has **no outgoing edge**,
+  - Then an **error** is shown.
+- On success, shows a confirmation message and logs flow data.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 🧩 Component Overview
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+| Component          | Description                                                                 |
+|--------------------|-----------------------------------------------------------------------------|
+| `ChatBotFlowBuilder` | Main page component, contains logic for node state, edge connection, layout |
+| `TextNode`         | Custom node component used in flow                                          |
+| `SideBar`          | Left panel with draggable nodes (appears when no node is selected)          |
+| `SettingsPanel`    | Appears when a node is selected, allows editing its content                 |
+| `useWindowHook`    | Hook to manage responsive behavior                                          |
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+---
 
-## Learn More
+## 🗂 Project Structure
+src/
+├── components/
+│ ├── textNode/
+│ │ ├── TextNode.jsx
+│ │ └── textNode.module.css
+│ ├── sideBar/
+│ │ ├── SideBar.jsx
+│ │ └── sideBar.module.css
+│ └── settingsPanel/
+│ ├── SettingsPanel.jsx
+│ └── settingsPanel.module.css
+│
+├── pages/
+│ ├── ChatBotFlowBuilder.jsx
+│ └── ChatBotFlowBuilder.module.css
+│
+├── hooks/
+│ └── useWindowHook.js
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+---
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 🎨 CSS Modules
 
-### Code Splitting
+All components use **CSS Modules** to ensure scoped, reusable, and maintainable styles.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+| Component         | CSS Module                      |
+|------------------|----------------------------------|
+| ChatBotFlowBuilder | `ChatBotFlowBuilder.module.css` |
+| TextNode         | `TextNode.module.css`           |
+| SideBar          | `SideBar.module.css`            |
+| SettingsPanel    | `SettingsPanel.module.css`      |
 
-### Analyzing the Bundle Size
+This ensures that styles are encapsulated and won't clash between components.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## 🚀 Installation
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### 1. Clone the Repository
+```bash
+git clone https://github.com/Kavita539/chatbot-builder.git
+cd chatbot-builder
+```
+### 2. Install dependencies
+```bash
+npm install
+```
+### 3. Start the Development Server
+```bash
+npm run start
+```
+---
 
-### Advanced Configuration
+## ▶️ Usage
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+1. **Drag** a **Message Node** from the **Nodes Panel** into the canvas.
+2. **Click** on a node to edit its label via the **Settings Panel**.
+3. **Connect** nodes by dragging from a **source handle** to a **target handle**.
+4. **Press** the **Save Changes** button to validate and save the flow.
+5. ⚠️ **Validation Rule:**  
+   If multiple nodes are **disconnected** (i.e., have no outgoing edge), the **flow cannot be saved**. Only one disconnected node is allowed.
 
-### Deployment
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## 🛠 Tech Stack
 
-### `npm run build` fails to minify
+| Technology        | Purpose                                      |
+|------------------|----------------------------------------------|
+| **React**         | Building the user interface                  |
+| **@xyflow/react** | Visual flow editor for drag-and-drop nodes   |
+| **CSS Modules**   | Scoped styling for React components          |
+| **JavaScript (ES6+)** | App logic, state management, interactions |
+| **Custom React Hooks** | Responsive behavior (e.g., window size detection) |
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
