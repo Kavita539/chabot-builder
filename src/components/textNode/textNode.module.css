@@ -36,9 +36,9 @@
 }
 
 .handleSource {
-  left: -6px;
+  bottom: -6px;
 }
 
 .handleTarget {
-  right: -6px;
+  top: -6px;
 }

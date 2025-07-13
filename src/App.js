@@ -1,25 +1,24 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useRef, useCallback } from 'react';
+import { ReactFlow, useReactFlow } from '@xyflow/react';
 
-function App() {
+import {
+  useNodesState,
+  useEdgesState,
+  addEdge,
+  Controls,
+  Background,
+  ReactFlowProvider,
+  MiniMap,
+} from '@xyflow/react';
+
+import '@xyflow/react/dist/style.css';
+import ChatBotFlowBuilder from './pages/ChatBotFlowBuilder';
+
+export default function App() {
+
+
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ChatBotFlowBuilder />
   );
 }
-
-export default App;
