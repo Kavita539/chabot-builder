@@ -1,6 +1,5 @@
-import React, { useState, useRef, useCallback } from 'react';
-import { ReactFlow, useReactFlow } from '@xyflow/react';
-
+import React, { useState, useRef, useCallback } from "react";
+import { ReactFlow, useReactFlow } from "@xyflow/react";
 import {
   useNodesState,
   useEdgesState,
@@ -9,29 +8,49 @@ import {
   Background,
   ReactFlowProvider,
   MiniMap,
-} from '@xyflow/react';
+} from "@xyflow/react";
 
-import '@xyflow/react/dist/style.css';
-
+import "@xyflow/react/dist/style.css";
+import styles from "./chatBotFlowBuilder.module.css";
 import SettingsPanel from "../components/settingsPanel/SettingsPanel";
 import SideBar from "../components/sideBar/SideBar";
 import TextNode from "../components/textNode/TextNode";
+import { useWindowSize } from "../hooks/useWindowHook";
 
 const ChatBotFlowBuilder = () => {
   const reactFlowWrapper = useRef(null);
+  const { width } = useWindowSize();
+  const isMobile = width <= 1140;
 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [reactFlowInstance, setReactFlowInstance] = useState(null);
   const [selectedNode, setSelectedNode] = useState(null);
+  const [notification, setNotification] = useState({
+    show: false,
+    message: "",
+    type: "",
+  });
 
   const nodeTypes = { textNode: TextNode };
   let id = 1;
   const getId = () => `node_${id++}`;
 
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    []
+    (params) => {
+      setEdges((eds) => {
+        const sourceHasEdge = eds.some((edge) => edge.source === params.source);
+        if (sourceHasEdge) {
+          showNotification(
+            "A source handle can only have one outgoing connection.",
+            "error"
+          );
+          return eds;
+        }
+        return addEdge(params, eds);
+      });
+    },
+    [setEdges]
   );
 
   const onDragOver = useCallback((event) => {
@@ -42,16 +61,12 @@ const ChatBotFlowBuilder = () => {
   const onDrop = useCallback(
     (event) => {
       event.preventDefault();
-
       if (!reactFlowWrapper.current || !reactFlowInstance) return;
 
       const reactFlowBounds = reactFlowWrapper.current.getBoundingClientRect();
       const type = event.dataTransfer.getData("application/reactflow");
-
       if (!type) return;
 
-      // FIX here: reactFlowInstance.project might not be a function
-      // So use useReactFlow hook to get project function, or fallback:
       let position = { x: 0, y: 0 };
       if (typeof reactFlowInstance.project === "function") {
         position = reactFlowInstance.project({
@@ -59,7 +74,6 @@ const ChatBotFlowBuilder = () => {
           y: event.clientY - reactFlowBounds.top,
         });
       } else {
-        // fallback: Use raw coords relative to container
         position = {
           x: event.clientX - reactFlowBounds.left,
           y: event.clientY - reactFlowBounds.top,
@@ -78,8 +92,27 @@ const ChatBotFlowBuilder = () => {
     [reactFlowInstance, setNodes]
   );
 
-  const onNodeClick = (event, node) => {
-    setSelectedNode(node);
+  const onNodeClick = useCallback(
+    (event, node) => {
+      setSelectedNode(node);
+      setNodes((nds) =>
+        nds.map((n) => ({
+          ...n,
+          selected: n.id === node.id,
+        }))
+      );
+    },
+    [setNodes]
+  );
+
+  const clearSelection = () => {
+    setSelectedNode(null);
+    setNodes((nds) =>
+      nds.map((n) => ({
+        ...n,
+        selected: false,
+      }))
+    );
   };
 
   const updateNode = (id, data) => {
@@ -90,57 +123,52 @@ const ChatBotFlowBuilder = () => {
     );
   };
 
+  const showNotification = (message, type) => {
+    setNotification({ show: true, message, type });
+    setTimeout(() => {
+      setNotification({ show: false, message: "", type: "" });
+    }, 3000);
+  };
+
   const saveFlow = () => {
     if (nodes.length > 1) {
-      const nodesWithoutIncomingEdges = nodes.filter((node) => {
-        return !edges.some((edge) => edge.target === node.id);
-      });
+      const targetNodes = new Set(edges.map((edge) => edge.target));
+      const nodesWithEmptyTargets = nodes.filter(
+        (node) => !targetNodes.has(node.id)
+      );
 
-      if (nodesWithoutIncomingEdges.length > 1) {
-        alert("Error: More than one node has an empty target handle.");
-      } else {
-        alert("Flow saved successfully!");
+      if (nodesWithEmptyTargets.length > 1) {
+        showNotification(
+          "Cannot save flow: More than one node has an empty target.",
+          "error"
+        );
+        return;
       }
-    } else {
-      alert("Flow saved successfully!");
     }
+    showNotification("Flow saved successfully!", "success");
   };
 
   return (
-    <div
-      style={{
-        width: "100vw",
-        height: "100vh",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <header
-        style={{
-          padding: "10px",
-          background: "#f3f3f3",
-          borderBottom: "1px solid #ddd",
-          display: "flex",
-          justifyContent: "flex-end",
-        }}
-      >
-        <button
-          onClick={saveFlow}
-          style={{
-            padding: "10px 20px",
-            background: "#4caf50",
-            color: "white",
-            border: "none",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
+    <div className={styles.wrapper}>
+      {notification.show && (
+        <div
+          className={`${styles.notification} ${
+            notification.type === "success" ? styles.success : styles.error
+          }`}
         >
-          Save Flow
+          {notification.message}
+        </div>
+      )}
+      <header className={styles.header}>
+        <button onClick={saveFlow} className={styles.saveButton}>
+          Save Changes
         </button>
       </header>
-      <div style={{ display: "flex", flexGrow: 1 }}>
+      <div
+        className={`${styles.content} ${isMobile ? styles.mobileContent : ""}`}
+      >
         <ReactFlowProvider>
-          <div style={{ flexGrow: 1, height: "100%" }} ref={reactFlowWrapper}>
+          <div className={styles.reactFlowWrapper} ref={reactFlowWrapper}>
             <ReactFlow
               nodes={nodes}
               edges={edges}
@@ -152,6 +180,7 @@ const ChatBotFlowBuilder = () => {
               onDragOver={onDragOver}
               onNodeClick={onNodeClick}
               nodeTypes={nodeTypes}
+              onPaneClick={clearSelection}
               fitView
             >
               <Controls />
@@ -159,11 +188,19 @@ const ChatBotFlowBuilder = () => {
               <Background variant="dots" gap={12} size={1} />
             </ReactFlow>
           </div>
-          {selectedNode ? (
-            <SettingsPanel node={selectedNode} updateNode={updateNode} />
-          ) : (
-            <SideBar />
-          )}
+          <div
+            className={`${styles.panel} ${isMobile ? styles.mobilePanel : ""}`}
+          >
+            {selectedNode ? (
+              <SettingsPanel
+                node={selectedNode}
+                updateNode={updateNode}
+                clearSelection={clearSelection}
+              />
+            ) : (
+              <SideBar />
+            )}
+          </div>
         </ReactFlowProvider>
       </div>
     </div>

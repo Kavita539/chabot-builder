@@ -1,24 +1,38 @@
 import React from "react";
 
 import styles from "./textNode.module.css";
+import { Handle, Position } from "@xyflow/react";
 
 // Custom TextNode component
-const TextNode = ({ data, id }) => {
+const TextNode = ({ data, isConnectable, selected }) => {
   return (
-    <div className={styles.textNodeContainer}>
+    <div
+      style={{
+        border: `1px solid ${selected ? "#6e41e2" : "#ddd"}`,
+      }}
+      className={styles.textNodeContainer}
+    >
+      {/* Node Header */}
       <div className={styles.header}>
-        <div className={styles.title}>Send Message</div>
-        <div className={styles.platform}>WhatsApp</div>
+        <span>💬 Send Message</span>
+        <span className={styles.headerIcon}>📱</span>
       </div>
-      <div className={styles.label}>{data.label}</div>
-      {/* add source handle & taget handle */}
-      <div
-        id={`source_${id}`}
-        className={`${styles.handle} ${styles.handleSource}`}
+      {/* Node Body */}
+      <div className={styles.nodeBody}>{data.label || "Text message"}</div>
+      {/* Handles for connections */}
+      <Handle
+        type="target"
+        position={Position.Left}
+        id="a"
+        className={styles.handle}
+        isConnectable={isConnectable}
       />
-      <div
-        id={`target_${id}`}
-        className={`${styles.handle} ${styles.handleTarget}`}
+      <Handle
+        type="source"
+        position={Position.Right}
+        id="b"
+        className={styles.handle}
+        isConnectable={isConnectable}
       />
     </div>
   );

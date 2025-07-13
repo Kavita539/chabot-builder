@@ -1,22 +1,31 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import styles from "./settingsPanel.module.css";
 
-// SettingsPanel component
-const SettingsPanel = ({ node, updateNode }) => {
+const SettingsPanel = ({ node, updateNode, clearSelection }) => {
   const [text, setText] = useState(node.data.label);
 
-  const handleChange = (e) => {
-    setText(e.target.value);
-    updateNode(node.id, { label: e.target.value });
+  useEffect(() => {
+    setText(node.data.label);
+  }, [node]);
+
+  const handleChange = (evt) => {
+    const newText = evt.target.value;
+    setText(newText);
+    updateNode(node.id, { label: newText });
   };
 
   return (
-    <aside className={styles.settingsContainer}>
-      <div className={styles.title}>Settings Panel</div>
-      <label>Text:</label>
+    <aside className={styles.aside}>
+      <div className={styles.header}>
+        <button onClick={clearSelection} className={styles.backButton}>
+          ←
+        </button>
+        Message Settings
+      </div>
+      <label className={styles.label}>Text:</label>
       <textarea
-        rows="4"
+        rows="5"
         value={text}
         onChange={handleChange}
         className={styles.textarea}
