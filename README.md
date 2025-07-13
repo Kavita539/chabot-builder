@@ -18,7 +18,7 @@ A drag-and-drop interface for visually designing chatbot message flows using **R
 ---
 
 ## 🔗 Live Demo
-👉 [Click here to try the Chatbot Flow Builder]([https://your-hosting-url.com](https://chabot-builder.vercel.app/))
+👉 [Chatbot Flow Builder](https://chabot-builder.vercel.app/)
 
 ---
 
